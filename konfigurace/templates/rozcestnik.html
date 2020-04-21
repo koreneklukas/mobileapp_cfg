@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-form-title" style="background-image: url({% static 'images/bg-01.jpg' %});">
+					<span class="login100-form-title-1">
+						<br><br>
+					</span>
+				</div>
+
+				<form id="myForm" action="loyalty/step-1" class="login100-form validate-form" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit" onsubmit="window.location.reload();">
+							Loyalty
+						</button>
+					</div>
+				</form>
+				<form id="myForm" action="loyalty/step-1" class="login100-form validate-form" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit" onsubmit="window.location.reload();">
+							Banners
+						</button>
+					</div>
+				</form>
+				<form id="myForm" action="/" class="login100-form validate-form" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+
+					<div class="container-login100-form-btn">
+                        <br><br><br>
+						<button class="login100-form-btn" type="submit" onsubmit="window.location.reload();">
+							Logout
+						</button>
+					</div>
+				</form>
+                <div align="center">
+                    <p>{{result}}</p>
+                    <br><br><br>
+                </div>
+				<div align="center" siz>
+                    <p>You are now working on {{country}} version {{version}}.</p><br>
+                </div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
