@@ -41,7 +41,6 @@ def get_files(dest):
                             save_request_content(get_inner_file, p, dest)
     return file_paths
 
-_get_filepaths()
 
 
 def _get_filepaths(master):
@@ -64,3 +63,15 @@ def _get_filepaths(master):
                                             if fnmatch.fnmatch(dx, filepath_pattern):
                                                 file_paths.append(d[dx])
     return file_paths
+
+
+def adjust_mjson():
+    with open('konfigurace\\tmp\\CZ\\Master2.json', 'w+') as f:
+        mjson = json.loads(f.read())
+        for key in mjson.keys():
+            for master_key in mjson[key]:
+                for primary_key in master_key.keys():
+                    for x in master_key[primary_key]:
+                        print(x)
+
+adjust_mjson()

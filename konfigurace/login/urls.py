@@ -8,7 +8,7 @@ urlpatterns = [
     path('loyalty/step-1', views.loyalty, name="loyalty/step-1"),
     path('loyalty/step-2', views.loyalty_proceed_1_step, name='loyalty/step-2'),
     path('loyalty/step-3', views.loyalty_proceed_2_step, name='loyalty/step-3'),
+    path('step-2', views.loyalty_proceed_1_step, name='step-2'),
     path('success', views.success, name='success'),
-    path('try-again', views.try_again, name='try-again'),
     path('back', views.back_to_tree, name='back'),
 ]

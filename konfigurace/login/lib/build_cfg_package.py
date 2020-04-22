@@ -145,5 +145,3 @@ def check_time(vers):
         return True
     else:
         return False
-
-check_time('2.200330')

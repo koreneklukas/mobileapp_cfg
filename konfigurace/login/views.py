@@ -1,12 +1,6 @@
-import json
-
 from django.shortcuts import render
-import pandas as pd
-from django.http import HttpResponseRedirect
-from .lib.work import CreateJSON
 from .lib.build_cfg_package import get_files, check_version
 from .lib.loyalty_steps import step_one, step_two
-import sys
 
 # Create your views here.
 
@@ -33,12 +27,6 @@ def success(request):
                                                'version': store_version_variable(), 'country': store_country_variable()})
 
 
-def try_again(request):
-    return render(request, 'loyalty_step_1.html',
-                  {'result': 'The version in XLSX file is not matching with the entered version.',
-                   'version': store_version_variable(), 'country': store_country_variable()})
-
-
 def back_to_tree(request):
     return render(request, 'rozcestnik.html',
                   {'version': store_version_variable(), 'country': store_country_variable()})
@@ -52,7 +40,7 @@ def tree(request):
         store_version_variable(version_new)
         store_country_variable(country_new)
         print(store_country_variable())
-        #get_files(store_country_variable())
+        get_files(store_country_variable())
         return render(request, 'rozcestnik.html',
                       {'version': store_version_variable(), 'country': store_country_variable()})
     elif not check and vers == 'yet':
