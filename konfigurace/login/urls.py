@@ -11,4 +11,5 @@ urlpatterns = [
     path('step-2', views.loyalty_proceed_1_step, name='step-2'),
     path('success', views.success, name='success'),
     path('back', views.back_to_tree, name='back'),
+    path('git-push', views.git, name='git-push'),
 ]

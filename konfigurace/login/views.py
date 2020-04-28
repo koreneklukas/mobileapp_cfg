@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .lib.build_cfg_package import get_files, check_version
+from .lib.build_cfg_package import get_files, check_version, git_push
 from .lib.loyalty_steps import step_one, step_two
 
 # Create your views here.
@@ -15,15 +15,13 @@ def index(request):
 def login(request):
     username = request.POST['username']
     password = request.POST['pass']
-    if username not in creds.keys():
-        return render(request, 'home.html', {"result": "Bad password."})
-    elif creds[username] != password:
+    if username not in creds.keys() or creds[username] != password:
         return render(request, 'home.html', {"result": "Bad password."})
     return render(request, 'set-version.html')
 
 
 def success(request):
-    return render(request, 'rozcestnik.html', {'result': 'Everything is ok, configuration is in progress.',
+    return render(request, 'rozcestnik-2.html', {'result': 'Everything is ok, configuration is in progress.',
                                                'version': store_version_variable(), 'country': store_country_variable()})
 
 
@@ -39,8 +37,7 @@ def tree(request):
     if check:
         store_version_variable(version_new)
         store_country_variable(country_new)
-        print(store_country_variable())
-        get_files(store_country_variable())
+        get_files(store_country_variable(), store_version_variable())
         return render(request, 'rozcestnik.html',
                       {'version': store_version_variable(), 'country': store_country_variable()})
     elif not check and vers == 'yet':
@@ -54,6 +51,13 @@ def tree(request):
 def loyalty(request):
     version = store_version_variable()
     return render(request, 'loyalty_step_1.html', {'version': version, 'country': store_country_variable()})
+
+
+def git(request):
+    version = store_version_variable()
+    country = store_country_variable()
+    url = git_push(str(version), str(country))
+    return render(request, 'rozcestnik-2.html', {'version': version, 'country': store_country_variable(), 'url': url})
 
 
 def store_version_variable(variable=None):

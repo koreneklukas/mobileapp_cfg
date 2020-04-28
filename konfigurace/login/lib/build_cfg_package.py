@@ -4,9 +4,13 @@ import fnmatch
 import os
 import errno
 import datetime
+import urllib3
+from git import Repo
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 filepath_pattern = "*ilePat*"
 MasterJson_url = 'Master2.json'
+
 
 def get_inner_fps(fp, dest):
     file_paths_inner = []
@@ -54,27 +58,30 @@ def _get_filepaths(master, dest):
     return file_paths
 
 
-def get_mjson(dest):
+def get_mjson(dest, version):
     init_request = make_request(dest, MasterJson_url)
-    save_request_content(init_request, MasterJson_url, dest)
+    save_request_content(init_request, MasterJson_url, dest, version)
     return init_request.content.decode('UTF-8')
 
 
-def save_request_content(req, p, dest):
-    fp = os.path.join("tmp\\{}".format(dest), p)
+def save_request_content(req, p, dest, version):
+    fp = os.path.join("tmp\\{}\\{}".format(dest, version), p)
     if not os.path.exists(os.path.dirname(fp)):
         try:
             os.makedirs(os.path.dirname(fp))
         except OSError as exc:
             if exc.errno != errno.EEXIST:
                 raise
-    if not isinstance(req, bytes):
+    if not isinstance(req, bytes) and not isinstance(req, dict):
         req.raw.decode_content = True
         with open(fp, "wb") as f:
             f.write(req.content)
-    else:
+    elif isinstance(req, bytes):
         with open(fp, "wb") as f:
             f.write(req)
+    elif isinstance(req, dict):
+        with open(fp, "w+", encoding='UTF-8') as f:
+            json.dump(req, f, indent=4, sort_keys=False, ensure_ascii=False)
     return fp
 
 
@@ -88,14 +95,14 @@ def json_content(p):
         return f.read()
 
 
-def get_files(dest):
+def get_files(dest, version):
     print('getting filepaths', datetime.datetime.now())
-    paths_js = dedup_list(_get_filepaths(get_mjson(dest), dest))
+    paths_js = dedup_list(_get_filepaths(get_mjson(dest, version), dest))
     print('started with downloading', datetime.datetime.now())
     for p in paths_js:
         req = make_request(dest, p)
         if req.status_code == 200:
-            save_request_content(req, p, dest)
+            save_request_content(req, p, dest, version)
         else:
             print(req.status_code, p)
             continue
@@ -112,28 +119,56 @@ def dedup_list(p_list):
 def check_version(vers, dest):
     date_vers = check_time(vers)
     if date_vers:
-        mjson = json.loads(get_mjson(dest))
+        mjson = json.loads(get_mjson(dest, vers))
         version = 0.0
         for i in mjson.keys():
             for main_key in mjson[i]:
                 for first_level in mjson[i][main_key]:
                     for f in first_level:
-                        if f == 'version':
-                            if first_level[f] > version:
-                                version = first_level[f]
+                        if f == 'version' and first_level[f] > version:
+                            version = first_level[f]
                         else:
                             if isinstance(first_level[f], list):
                                 for second_level in first_level[f]:
                                     for s in second_level.keys():
-                                        if s == 'version':
-                                            if second_level[s] > version:
-                                                version = second_level[s]
+                                        if s == 'version' and second_level[s] > version:
+                                            version = second_level[s]
         if version < float(vers):
-            return True, version
+                return True, version
         else:
             return False, version
     else:
         return False, 'yet'
+
+
+def get_version(dest, settings, new_version):
+    mjson = json.loads(get_mjson(dest, new_version))
+    primary_dicts = mjson['MasterJSON'][settings]
+    version_list = []
+    if isinstance(primary_dicts, list):
+        for i in primary_dicts:
+            for ik in i.keys():
+                if ik != 'version' and isinstance(i[ik], list):
+                    for ikx in i[ik]:
+                        for ikxk in ikx.keys():
+                            if ikxk == 'version':
+                                version_list.append(ikx[ikxk])
+                elif ik == 'version':
+                    version = i[ik]
+                    version_list.append(version)
+    return version_list
+
+
+def change_version(dest, case, new_version):
+    if case.lower() == 'loyalty' and new_version:
+        settings = 'unpersonifiedOfferSettings'
+        version = get_version(dest, settings, new_version)
+        if version[1] == '' or version[0] == version[1]:
+            with open('tmp\\{}\\{}\\Master2.json'.format(dest,new_version), 'rt') as lolc:
+                lolss = lolc.read().split(settings)
+            with open('tmp\\{}\\{}\\Master2.json'.format(dest,new_version), 'wt') as lolg:
+                lxs = lolss[1].replace(str(version[0]), str(new_version))
+                lolg.write(lolss[0]+settings+lxs)
 
 
 def check_time(vers):
@@ -145,3 +180,14 @@ def check_time(vers):
         return True
     else:
         return False
+
+
+def git_push(version, country):
+    repo = Repo('tmp')
+    if country.upper() == 'CZ':
+        repo.index.add(['CZ'])
+    elif country.upper() == 'SK':
+        repo.index.add(['SK'])
+    repo.index.commit(version)
+    origin = repo.remote('origin')
+    origin.push()
