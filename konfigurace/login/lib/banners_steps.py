@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-import os
 import json
-from .build_cfg_package import change_decision, json_content, get_version, save_request_content
+from .build_cfg_package import change_decision, json_content, get_version, save_request_content, make_request
+
+
+url_list = []
 
 
 def get_banners_json(request, page, dest, version):
@@ -23,6 +25,8 @@ def save_banners_android(request, dest, version):
     mjson = json_content(dest, version)
     dumped = json.dumps(mjson, indent=4,ensure_ascii=False,sort_keys=False)
     new_jsonicek = json.loads(request.POST["brand"])
+    get_new_banners_url(url_list, new_jsonicek)
+
     mjson["MasterJSON"]["bannersSettings"][0]["banners"].clear()
 
     for i in new_jsonicek:
@@ -68,9 +72,32 @@ def save_banners_ios(request, dest, version):
     change_decision(dest, 'banners_ios', version)
 
 
+def get_new_banners_url(json_banners):
+    for url in json_banners:
+        one = url["filePath"]
+        store_banners(one)
+
+
+def store_banners(urls=None):
+    if urls:
+        url_list.append(urls)
+    else:
+        return url_list
+
+
 def upload_function(request, dest, versionx):
     page = 'upload_banner_images.html'
     banner_file = request.FILES.getlist('filebanner')
+    banner_urls = store_banners()
+
+    version = get_version(dest, 'bannersSettings', versionx)[0]
+    banner_path_get = 'BannerSettings/{}/'.format(version)
+    banner_path_save = 'BannerSettings/{}/'.format(versionx)
+
+    for u in banner_urls:
+        fname = u.split('/')[2]
+        req = make_request(dest, banner_path_get + fname)
+        save_request_content(req, banner_path_save + fname, dest, versionx)
 
     if banner_file:
         for banner in banner_file:
@@ -79,7 +106,7 @@ def upload_function(request, dest, versionx):
                 save_request_content(banner.read(), banner_path, dest, versionx)
             else:
                 return render(request, page,
-                            {'result': 'Vložený offer file není ve formátu .jpg nebo .png.',
+                            {'result': 'Vložený banner file není ve formátu .jpg nebo .png.',
                             'version': versionx, 'country': dest})
 
     return HttpResponseRedirect("/success")
