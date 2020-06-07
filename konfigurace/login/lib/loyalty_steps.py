@@ -84,14 +84,14 @@ def step_two(request, page, versionx, countryx):
     offer_path_get = 'OfferSettings/{}/offer/'.format(version)
     offer_path_save = 'OfferSettings/{}/offer/'.format(versionx)
 
-    with open('tmp/{}_partner_logo.csv'.format(countryx.upper()), 'r', encoding='utf-8') as logo_paths:
+    with open('{}_partner_logo.csv'.format(countryx.upper()), 'r', encoding='utf-8') as logo_paths:
         reader_logo = csv.reader(logo_paths)
         for partner_logo_paths in reader_logo:
             for l in partner_logo_paths:
                 req = make_request(countryx, logo_path_get + l)
                 save_request_content(req, logo_path_save + l, countryx, versionx)
 
-    with open('tmp/{}_partner_offer.csv'.format(countryx.upper()), 'r', encoding='utf-8') as offer_paths:
+    with open('{}_partner_offer.csv'.format(countryx.upper()), 'r', encoding='utf-8') as offer_paths:
         reader_offer = csv.reader(offer_paths)
         for partner_offer_paths in reader_offer:
             for o in partner_offer_paths:
@@ -103,7 +103,7 @@ def step_two(request, page, versionx, countryx):
             offer_path = 'OfferSettings/{}/offer/{}'.format(versionx, offer)
             if '.png' or '.jpg' in offer:
                 save_request_content(offer.read(), offer_path, countryx, versionx)
-                with open('tmp/{}_partner_offer.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
+                with open('{}_partner_offer.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
                     fd.write('\n{}'.format(offer))
             else:
                 return render(request, page,
@@ -115,7 +115,7 @@ def step_two(request, page, versionx, countryx):
             logo_path = 'OfferSettings/{}/logo/{}'.format(versionx, logo)
             if '.png' or '.jpg' in logo:
                 save_request_content(logo.read(), logo_path, countryx, versionx)
-                with open('tmp/{}_partner_logo.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
+                with open('{}_partner_logo.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
                     fd.write('\n{}'.format(logo))
             else:
                 return render(request, page,
