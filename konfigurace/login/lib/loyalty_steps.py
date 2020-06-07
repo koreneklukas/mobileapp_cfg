@@ -53,15 +53,15 @@ def step_one(request, page, versionx, countryx):
                         path = CreateJSON(excel).create_dirs(str(version), dest)
                     except:
                         continue
-                    with open('{}\\{}'.format(path, filename), 'w+',
+                    with open('{}/{}'.format(path, filename), 'w+',
                               encoding='utf-8') as outfile:
                         json.dump(json_tree[key], outfile, indent=4, ensure_ascii=False)
-                    with open('{}\\{}'.format(path, filename), 'rt',
+                    with open('{}/{}'.format(path, filename), 'rt',
                               encoding='utf-8') as file_to_fix:
                         f = file_to_fix.read()
-                    with open('{}\\{}'.format(path, filename), 'wt',
+                    with open('{}/{}'.format(path, filename), 'wt',
                               encoding='utf-8') as file_to_save:
-                        fs = f.replace('\\\\\\', '\\')
+                        fs = f.replace('///', '/')
                         file_to_save.write(fs)
             else:
                 return render(request, page,
@@ -80,18 +80,18 @@ def step_two(request, page, versionx, countryx):
     offer_file = request.FILES.getlist('fileoffer')
     version = get_version(countryx, 'unpersonifiedOfferSettings', versionx)[0]
     logo_path_get = 'OfferSettings/{}/logo/'.format(version)
-    logo_path_save = 'OfferSettings\\{}\\logo\\'.format(versionx)
+    logo_path_save = 'OfferSettings/{}/logo/'.format(versionx)
     offer_path_get = 'OfferSettings/{}/offer/'.format(version)
-    offer_path_save = 'OfferSettings\\{}\\offer\\'.format(versionx)
+    offer_path_save = 'OfferSettings/{}/offer/'.format(versionx)
 
-    with open('tmp\\{}_partner_logo.csv'.format(countryx.upper()), 'r', encoding='utf-8') as logo_paths:
+    with open('tmp/{}_partner_logo.csv'.format(countryx.upper()), 'r', encoding='utf-8') as logo_paths:
         reader_logo = csv.reader(logo_paths)
         for partner_logo_paths in reader_logo:
             for l in partner_logo_paths:
                 req = make_request(countryx, logo_path_get + l)
                 save_request_content(req, logo_path_save + l, countryx, versionx)
 
-    with open('tmp\\{}_partner_offer.csv'.format(countryx.upper()), 'r', encoding='utf-8') as offer_paths:
+    with open('tmp/{}_partner_offer.csv'.format(countryx.upper()), 'r', encoding='utf-8') as offer_paths:
         reader_offer = csv.reader(offer_paths)
         for partner_offer_paths in reader_offer:
             for o in partner_offer_paths:
@@ -100,10 +100,10 @@ def step_two(request, page, versionx, countryx):
 
     if offer_file:
         for offer in offer_file:
-            offer_path = 'OfferSettings\\{}\\offer\\{}'.format(versionx, offer)
+            offer_path = 'OfferSettings/{}/offer/{}'.format(versionx, offer)
             if '.png' or '.jpg' in offer:
                 save_request_content(offer.read(), offer_path, countryx, versionx)
-                with open('tmp\\{}_partner_offer.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
+                with open('tmp/{}_partner_offer.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
                     fd.write('\n{}'.format(offer))
             else:
                 return render(request, page,
@@ -112,10 +112,10 @@ def step_two(request, page, versionx, countryx):
 
     if logo_file:
         for logo in logo_file:
-            logo_path = 'OfferSettings\\{}\\logo\\{}'.format(versionx, logo)
+            logo_path = 'OfferSettings/{}/logo/{}'.format(versionx, logo)
             if '.png' or '.jpg' in logo:
                 save_request_content(logo.read(), logo_path, countryx, versionx)
-                with open('tmp\\{}_partner_logo.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
+                with open('tmp/{}_partner_logo.csv'.format(countryx.upper()), 'a', encoding='utf-8') as fd:
                     fd.write('\n{}'.format(logo))
             else:
                 return render(request, page,
