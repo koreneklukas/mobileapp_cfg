@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 {% load static %}
 
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
 	<title>Mobile APP Configuration Site</title>
 	<meta charset="UTF-8">
@@ -35,18 +35,26 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 <!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.contextMenu.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.contextMenu.min.css.map' %}">
+<!--===============================================================================================-->
 </head>
 <body>
 {% block content %}
 
 {% endblock %}
+
 <!--===============================================================================================-->
-	<script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+	<script src="{% static 'vendor/jquery/jquery-3.3.1.min.js' %}" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
 <!--===============================================================================================-->
 	<script src="{% static 'vendor/animsition/js/animsition.min.js' %}"></script>
 <!--===============================================================================================-->
 	<script src="{% static 'vendor/bootstrap/js/popper.js' %}"></script>
-	<script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
 <!--===============================================================================================-->
 	<script src="{% static 'vendor/select2/select2.min.js' %}"></script>
 <!--===============================================================================================-->
@@ -62,6 +70,7 @@
 	<script src="{% static 'js/jquery.custom-file-input.js' %}"></script>
 <!--===============================================================================================-->
 	<script src="{% static 'js/jquery-v1.min.js' %}"></script>
+
 
 </body>
 </html>

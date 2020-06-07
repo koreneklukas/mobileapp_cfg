@@ -1,6 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from .lib.build_cfg_package import get_files, check_version, git_push
 from .lib.loyalty_steps import step_one, step_two
+from .lib.banners_steps import get_banners_json, save_banners_android, save_banners_ios, upload_function
 
 # Create your views here.
 
@@ -16,12 +18,12 @@ def login(request):
     username = request.POST['username']
     password = request.POST['pass']
     if username not in creds.keys() or creds[username] != password:
-        return render(request, 'home.html', {"result": "Bad password."})
+        return render(request, 'home.html', {"result": "Špatně zadaný uživatel nebo heslo."})
     return render(request, 'set-version.html')
 
 
 def success(request):
-    return render(request, 'rozcestnik-2.html', {'result': 'Everything is ok, configuration is in progress.',
+    return render(request, 'rozcestnik-2.html', {'result': 'Připraveno k nahrátí na GitHub.',
                                                'version': store_version_variable(), 'country': store_country_variable()})
 
 
@@ -42,10 +44,10 @@ def tree(request):
                       {'version': store_version_variable(), 'country': store_country_variable()})
     elif not check and vers == 'yet':
         return render(request, 'set-version.html',
-                      {'result': 'You are trying to insert version newer than actual date.'})
+                      {'result': 'Snažíš se zadat novější verzi, než je dnešní datum'})
     else:
         return render(request, 'set-version.html',
-                      {'result': 'There is a newer version on production already. ({})'.format(vers)})
+                      {'result': 'Na produkci je již novější verze. ({})'.format(vers)})
 
 
 def loyalty(request):
@@ -57,7 +59,7 @@ def git(request):
     version = store_version_variable()
     country = store_country_variable()
     url = git_push(str(version), str(country))
-    return render(request, 'rozcestnik-2.html', {'version': version, 'country': store_country_variable(), 'url': url})
+    return render(request, 'rozcestnik-3.html', {'version': version, 'country': store_country_variable(), 'url': url})
 
 
 def store_version_variable(variable=None):
@@ -83,4 +85,28 @@ def loyalty_proceed_1_step(request):
 def loyalty_proceed_2_step(request):
     page = 'loyalty_step_2.html'
     result = step_two(request, page, store_version_variable(), store_country_variable())
+    return result
+
+
+def banners(request):
+    page = 'banners_android.html'
+    result = get_banners_json(request, page, store_country_variable(), store_version_variable())
+    return result
+
+
+def ios(request):
+    page = 'banners_ios.html'
+    save_banners_android(request, store_country_variable(), store_version_variable())
+    result = get_banners_json(request, page, store_country_variable(), store_version_variable())
+    return result
+
+
+def upload_banner_images_page(request):
+    page = 'upload_banner_images.html'
+    save_banners_ios(request, store_country_variable(), store_version_variable())
+    return render(request, page, {'version': store_version_variable(), 'country': store_country_variable()})
+
+
+def upload(request):
+    result = upload_function(request, store_country_variable(), store_version_variable())
     return result

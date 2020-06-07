@@ -7,6 +7,8 @@ import datetime
 import urllib3
 from git import Repo
 
+#git config --global http.sslVerify false
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 filepath_pattern = "*ilePat*"
 MasterJson_url = 'Master2.json'
@@ -90,9 +92,9 @@ def make_request(dest, p):
     return req
 
 
-def json_content(p):
-    with open(p, "rb") as f:
-        return f.read()
+def json_content(dest, version):
+    with open('tmp\\{}\\{}\\{}'.format(dest, version, MasterJson_url), "rt", encoding='UTF-8') as f:
+        return json.loads(f.read())
 
 
 def get_files(dest, version):
@@ -142,7 +144,7 @@ def check_version(vers, dest):
 
 
 def get_version(dest, settings, new_version):
-    mjson = json.loads(get_mjson(dest, new_version))
+    mjson = json_content(dest, new_version)
     primary_dicts = mjson['MasterJSON'][settings]
     version_list = []
     if isinstance(primary_dicts, list):
@@ -159,16 +161,49 @@ def get_version(dest, settings, new_version):
     return version_list
 
 
-def change_version(dest, case, new_version):
+def change_decision(dest, case, new_version):
+
     if case.lower() == 'loyalty' and new_version:
         settings = 'unpersonifiedOfferSettings'
-        version = get_version(dest, settings, new_version)
+        old_version = get_version(dest, settings, new_version)
+        change_version(dest, settings, old_version, new_version)
+
+    elif case.lower() == 'banners_android' and new_version:
+        settings = "bannersSettings\""
+        old_settings = "bannersSettings"
+        to_version = "bannersSettings_iOS"
+        old_version = get_version(dest, old_settings, new_version)
+        change_version(dest, settings, old_version, new_version, to_version)
+
+    elif case.lower() == 'banners_ios' and new_version:
+        settings = "bannersSettings_iOS\""
+        old_settings = "bannersSettings_iOS"
+        to_version = "cardSettings"
+        old_version = get_version(dest, old_settings, new_version)
+        print(old_version)
+        change_version(dest, settings, old_version, new_version, to_version)
+
+
+def change_version(dest, settings, version, new_version, to_version=None):
+
+    if settings == "unpersonifiedOfferSettings":
+
         if version[1] == '' or version[0] == version[1]:
-            with open('tmp\\{}\\{}\\Master2.json'.format(dest,new_version), 'rt') as lolc:
+            with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
                 lolss = lolc.read().split(settings)
-            with open('tmp\\{}\\{}\\Master2.json'.format(dest,new_version), 'wt') as lolg:
+
+            with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
                 lxs = lolss[1].replace(str(version[0]), str(new_version))
-                lolg.write(lolss[0]+settings+lxs)
+                lolg.write(lolss[0] + settings + lxs)
+    else:
+        with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
+            lolss = lolc.read().split(settings)
+            get_android_part = lolss[1].split(to_version)
+
+        with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
+            lxs = get_android_part[0].replace(str(version[0]), str(new_version))
+            lolg.write(lolss[0] + settings + lxs + to_version + get_android_part[1])
+
 
 
 def check_time(vers):
@@ -188,6 +223,9 @@ def git_push(version, country):
         repo.index.add(['CZ'])
     elif country.upper() == 'SK':
         repo.index.add(['SK'])
+
     repo.index.commit(version)
     origin = repo.remote('origin')
     origin.push()
+    return "https://github.com/koubicl/configs/tree/master/{}/{}".format(country.upper(), version)
+
