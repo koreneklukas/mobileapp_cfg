@@ -6,7 +6,7 @@ from .build_cfg_package import change_decision, json_content, get_version, save_
 
 
 def get_banners_json(request, page, dest, version):
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
+    with open('tmp/{}/{}/{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
         mjson = json.loads(f.read())
 
     android_banners = str(mjson["MasterJSON"]["bannersSettings"][0]["banners"])\
@@ -30,14 +30,14 @@ def save_banners_android(request, dest, version):
     substitute_banners = dumped.split("bannersSettings\"")[1].split("banners\": ")[1].split("\"bannersSettings_iOS")[0]
     new_banners = json.dumps(mjson, indent=4,ensure_ascii=False,sort_keys=False).split("bannersSettings\"")[1].split("banners\": ")[1].split("\"bannersSettings_iOS")[0]
 
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
+    with open('tmp/{}/{}/{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
         ready = f.read()\
             .replace("bannersSettings\"{}{}{}".format(dumped.split("bannersSettings\"")[1].split("banners\": ")[0],
                                                       "banners\": ", substitute_banners),
                      "bannersSettings\"{}{}{}".format(dumped.split("bannersSettings\"")[1].split("banners\": ")[0],
                                                       "banners\": ", new_banners))
 
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, 'Master2.json'), "wt", encoding='UTF-8') as fw:
+    with open('tmp/{}/{}/{}'.format(dest, version, 'Master2.json'), "wt", encoding='UTF-8') as fw:
         fw.write(ready)
 
 
@@ -55,14 +55,14 @@ def save_banners_ios(request, dest, version):
     substitute_banners = dumped.split("bannersSettings_iOS\"")[1].split("banners\": ")[1].split("\"cardSettings")[0]
     new_banners = json.dumps(mjson, indent=4,ensure_ascii=False,sort_keys=False).split("bannersSettings_iOS\"")[1].split("banners\": ")[1].split("\"cardSettings")[0]
 
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
+    with open('tmp/{}/{}/{}'.format(dest, version, 'Master2.json'), "rt", encoding='UTF-8') as f:
         subst = "bannersSettings_iOS\"{}{}{}".format(dumped.split("bannersSettings_iOS\"")[1].split("banners\": ")[0],
                                                       "banners\": ", substitute_banners)
         newb = "bannersSettings_iOS\"{}{}{}".format(dumped.split("bannersSettings_iOS\"")[1].split("banners\": ")[0],
                                                       "banners\": ", new_banners)
         ready = f.read().replace(subst, newb)
 
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, 'Master2.json'), "wt", encoding='UTF-8') as fw:
+    with open('tmp/{}/{}/{}'.format(dest, version, 'Master2.json'), "wt", encoding='UTF-8') as fw:
         fw.write(ready)
 
     change_decision(dest, 'banners_ios', version)
@@ -74,7 +74,7 @@ def upload_function(request, dest, versionx):
 
     if banner_file:
         for banner in banner_file:
-            banner_path = 'BannerSettings\\{}\\{}'.format(versionx, banner)
+            banner_path = 'BannerSettings/{}/{}'.format(versionx, banner)
             if '.png' or '.jpg' in banner:
                 save_request_content(banner.read(), banner_path, dest, versionx)
             else:
@@ -83,12 +83,3 @@ def upload_function(request, dest, versionx):
                             'version': versionx, 'country': dest})
 
     return HttpResponseRedirect("/success")
-
-
-
-
-
-
-
-
-

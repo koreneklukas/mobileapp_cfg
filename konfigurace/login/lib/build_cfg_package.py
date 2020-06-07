@@ -67,7 +67,7 @@ def get_mjson(dest, version):
 
 
 def save_request_content(req, p, dest, version):
-    fp = os.path.join("tmp\\{}\\{}".format(dest, version), p)
+    fp = os.path.join("tmp/{}/{}".format(dest, version), p)
     if not os.path.exists(os.path.dirname(fp)):
         try:
             os.makedirs(os.path.dirname(fp))
@@ -93,7 +93,7 @@ def make_request(dest, p):
 
 
 def json_content(dest, version):
-    with open('tmp\\{}\\{}\\{}'.format(dest, version, MasterJson_url), "rt", encoding='UTF-8') as f:
+    with open('tmp/{}/{}/{}'.format(dest, version, MasterJson_url), "rt", encoding='UTF-8') as f:
         return json.loads(f.read())
 
 
@@ -189,18 +189,18 @@ def change_version(dest, settings, version, new_version, to_version=None):
     if settings == "unpersonifiedOfferSettings":
 
         if version[1] == '' or version[0] == version[1]:
-            with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
+            with open('tmp/{}/{}/{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
                 lolss = lolc.read().split(settings)
 
-            with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
+            with open('tmp/{}/{}/{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
                 lxs = lolss[1].replace(str(version[0]), str(new_version))
                 lolg.write(lolss[0] + settings + lxs)
     else:
-        with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
+        with open('tmp/{}/{}/{}'.format(dest, new_version, MasterJson_url), 'rt', encoding='utf-8') as lolc:
             lolss = lolc.read().split(settings)
             get_android_part = lolss[1].split(to_version)
 
-        with open('tmp\\{}\\{}\\{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
+        with open('tmp/{}/{}/{}'.format(dest, new_version, MasterJson_url), 'wt', encoding='utf-8') as lolg:
             lxs = get_android_part[0].replace(str(version[0]), str(new_version))
             lolg.write(lolss[0] + settings + lxs + to_version + get_android_part[1])
 
@@ -228,4 +228,3 @@ def git_push(version, country):
     origin = repo.remote('origin')
     origin.push()
     return "https://github.com/koubicl/configs/tree/master/{}/{}".format(country.upper(), version)
-

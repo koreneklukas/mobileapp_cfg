@@ -61,7 +61,7 @@ def step_one(request, page, versionx, countryx):
                         f = file_to_fix.read()
                     with open('{}/{}'.format(path, filename), 'wt',
                               encoding='utf-8') as file_to_save:
-                        fs = f.replace('///', '/')
+                        fs = f.replace('\\\\\\', '\\')
                         file_to_save.write(fs)
             else:
                 return render(request, page,

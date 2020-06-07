@@ -63,7 +63,7 @@ class CreateJSON:
 
     def create_dirs(self, version, dest):
         parent_dir = "tmp"
-        directory = "{}\\{}\\OfferSettings\\{}".format(dest, version, version)
+        directory = "{}/{}/OfferSettings/{}".format(dest, version, version)
         path = os.path.join(parent_dir, directory)
         if not os.path.exists(path):
             os.makedirs(path)
