@@ -228,4 +228,4 @@ def git_push(version, country):
         repo.index.commit(version)
         origin = repo.remote('origin')
         origin.push()
-    return "https://github.com/koubicl/configs/tree/master/{}/{}".format(country.upper(), version)
+    return "https://github.com/koubicl/tmp/tree/master/{}/{}".format(country.upper(), version)
