@@ -224,7 +224,8 @@ def git_push(version, country):
     elif country.upper() == 'SK':
         repo.index.add(['SK'])
 
-    repo.index.commit(version)
-    origin = repo.remote('origin')
-    origin.push()
+    with repo.git.custom_environment(GIT_SSH_COMMAND='ssh -v -i /home/azureuser/.ssh/omg'):
+        repo.index.commit(version)
+        origin = repo.remote('origin')
+        origin.push()
     return "https://github.com/koubicl/configs/tree/master/{}/{}".format(country.upper(), version)

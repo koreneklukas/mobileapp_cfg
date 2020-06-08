@@ -25,7 +25,7 @@ def save_banners_android(request, dest, version):
     mjson = json_content(dest, version)
     dumped = json.dumps(mjson, indent=4,ensure_ascii=False,sort_keys=False)
     new_jsonicek = json.loads(request.POST["brand"])
-    get_new_banners_url(url_list, new_jsonicek)
+    get_new_banners_url(new_jsonicek)
 
     mjson["MasterJSON"]["bannersSettings"][0]["banners"].clear()
 
