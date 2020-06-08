@@ -19,7 +19,7 @@ def loadJson(path):
     """
     abs_json_path = os.path.join(script_dir, path)
     # read file
-    with open(abs_json_path, 'rt', encoding='utf8') as myfile:
+    with open(abs_json_path, 'rt', encoding='utf-8') as myfile:
         data = myfile.read()
     # parse file
     return json.loads(data)
