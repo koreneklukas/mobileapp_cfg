@@ -1,8 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from .lib.build_cfg_package import get_files, check_version, git_push
 from .lib.loyalty_steps import step_one, step_two
 from .lib.banners_steps import get_banners_json, save_banners_android, save_banners_ios, upload_function
+from .lib.ping import ping_hostnames
+import json
+
 
 # Create your views here.
 
@@ -110,3 +113,8 @@ def upload_banner_images_page(request):
 def upload(request):
     result = upload_function(request, store_country_variable(), store_version_variable())
     return result
+
+
+def web_status(request):
+    status = ping_hostnames()
+    return HttpResponse(status, content_type="application/json")

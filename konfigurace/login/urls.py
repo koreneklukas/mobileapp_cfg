@@ -16,4 +16,5 @@ urlpatterns = [
     path('back', views.back_to_tree, name='back'),
     path('git-push', views.git, name='git-push'),
     path('upload', views.upload, name='upload'),
+    path('web-app-status', views.web_status, name='web-status')
 ]
